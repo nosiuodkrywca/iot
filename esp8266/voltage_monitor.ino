@@ -1,4 +1,7 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
 #include <Wire.h>
@@ -38,7 +41,7 @@ float divRatio = (resI + resO) / resO;
 int capacity = 320;
 
 // voltage of a fully charged battery
-float fullyCharged = 12.9;
+float fullyCharged = 12.8;
 
 // voltage of an empty battery
 float totallyEmpty = 10.8;
@@ -53,17 +56,50 @@ void setup() {
   //wm.resetSettings();                     // uncomment to reset network settings
   wm.autoConnect();
 
+  // Port defaults to 8266
+  // ArduinoOTA.setPort(8266);
+
+  // Hostname defaults to esp8266-[ChipID]
+  // ArduinoOTA.setHostname("myesp8266");
+
+  // No authentication by default
+  // ArduinoOTA.setPassword((const char *)"123");
+
+
+  ArduinoOTA.onStart([]() {
+    Serial.println("OTA start");
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nOTA end");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("OTA progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("OTA error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("OTA auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("OTA begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("OTA connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("OTA receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("OTA end Failed");
+  });
+  ArduinoOTA.begin();
+
+
   server.on("/", handleRoot);               // Call the 'handleRoot' function when a client requests URI "/"
   server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
 
   server.begin();                           // Actually start the server
   Serial.println("HTTP server started");
 
+  server.enableCORS(true);
+
 }
 
 
 
 void loop(void){
+  ArduinoOTA.handle();
   server.handleClient();                    // Listen for HTTP requests from clients
 }
 
