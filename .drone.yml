@@ -12,12 +12,11 @@ trigger:
 
 steps:
 - name: drone-test2
-  image: docker/compose:1.29.2
-  volumes:
+  image: docker:latest
   - name: docker_sock
     path: /var/run/docker.sock
   commands:
-  - up -f docker-compose.yaml
+  - up -f docker-compose.yml
 volumes:
   - name: docker_sock
     host:
