@@ -12,7 +12,7 @@ trigger:
 
 steps:
 - name: drone-test2
-  image: compose:2.16.0
+  image: compose:1.29.2
   volumes:
   - name: docker_sock
     path: /var/run/docker.sock
