@@ -17,7 +17,7 @@ steps:
   - name: docker_sock
     path: /var/run/docker.sock
   commands:
-  - docker compose up -f docker-compose.yml
+  - docker compose -f docker-compose.yml up
 volumes:
   - name: docker_sock
     host:
