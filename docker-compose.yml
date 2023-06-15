@@ -1,0 +1,45 @@
+version: '3.9'
+#name: iot
+services:
+
+  #
+  # loki stack
+  # https://cylab.be/blog/241/use-loki-to-monitor-the-logs-of-your-docker-
+  # compose-application
+  #
+
+  loki:
+    image: grafana/loki:2.6.1
+    ports:
+      - "3100"
+    volumes:
+      # directory must be created first, with uid:gid 10001:10001
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:2.6.1
+    environment:
+      - COMPOSE_PROJECT_NAME
+    volumes:
+      # custom config will read logs from the containers of
+      # this project
+      - ./promtail-config.yml:/etc/promtail/config.yml
+      # to read container labels and logs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers
+
+  # will be available at http://127.0.0.1:3000
+  # default credentials: admin/admin
+  grafana:
+    image: grafana/grafana:9.2.2
+    ports:
+      - "3031:3000"
+    volumes:
+      # directory must be created first, with uid:gid 472:472
+      - grafana-data:/var/lib/grafana
+      # automatically configure the loki datasource
+      - ./provisioning/:/etc/grafana/provisioning/
+
+volumes:
+  loki-data:
+  grafana-data:
