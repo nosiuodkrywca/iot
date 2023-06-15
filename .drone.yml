@@ -11,7 +11,7 @@ trigger:
     - push
 
 steps:
-- name: drone-test
+- name: drone-test2
   image: compose:2.16.0
   volumes:
   - name: docker_sock
