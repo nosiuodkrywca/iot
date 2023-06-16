@@ -1,7 +1,10 @@
 kind: pipeline
 name: default
 type: docker
-#type: exec
+
+clone:
+  retries: 3
+
 concurrency:
   limit: 1
 
@@ -15,14 +18,14 @@ trigger:
     - push
 
 steps:
-- name: drone-test
-
+- name: run
   image: docker
   volumes:
   - name: docker_sock
     path: /var/run/docker.sock
   commands:
   - docker compose -f docker-compose.yml up
+
 volumes:
   - name: docker_sock
     host:
