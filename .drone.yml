@@ -5,8 +5,7 @@ type: exec
 concurrency:
   limit: 1
 
-environment:
-  DRONE_REPO_NAME: iot
+
 
 trigger:
   branch:
@@ -16,6 +15,8 @@ trigger:
 
 steps:
 - name: drone-test
+  environment:
+    DRONE_REPO_NAME: iot
 #  image: docker
 #  volumes:
 #  - name: docker_sock
